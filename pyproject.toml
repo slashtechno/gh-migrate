@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "gh-migrate"
+version = "0.1.0"
+description = "A script to migrate Github repositories from a user to an org"
+authors = ["slashtechno <77907286+slashtechno@users.noreply.github.com>"]
+repository = "https://github.com/slashtechno/gh-migrate"
+keywords = ["github"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "gh_migrate"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <=3.12"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+ruff = "^0.0.291"
+# ipykernel = "^6.25.2"
+# nbconvert = "^7.9.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+# More than the default (88) of `black` to make comments less of a headache
+# Where possible, `black` will attempt to format to 88 characters
+# However, setting ruff to 135 will allow for longer lines that can't be auto-formatted
+line-length = 135
+extend-select= ["FIX002"]
+
+[tool.poetry.scripts]
+gh-migrate = "gh_migrate.__main__:main"
