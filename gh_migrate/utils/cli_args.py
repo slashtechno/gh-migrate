@@ -2,6 +2,7 @@ import argparse
 import os
 import dotenv
 from pathlib import Path
+import sys
 
 argparser = None
 
@@ -22,6 +23,25 @@ def set_argparse():
         epilog=":)",
     )
 
+    argparser.add_argument(
+        "--migrate-all-repositories",
+        action="store_true",
+        help="Migrate all repositories from user to org",
+        default=os.environ["GH_MIGRATE_ALL_REPOSITORIES"]
+        if "GH_MIGRATE_ALL_REPOSITORIES" in os.environ
+        and os.environ["GH_MIGRATE_ALL_REPOSITORIES"] != ""
+        else False,
+    )
+    argparser.add_argument(
+        "--token",
+        type=str,
+        help="GitHub Token",
+        default=os.environ["GH_MIGRATE_TOKEN"]
+        if "GH_MIGRATE_TOKEN" in os.environ and os.environ["GH_MIGRATE_TOKEN"] != ""
+        else None,
+    )
+
+    check_required_args(["token"], argparser)
 
     # example_group = argparser.add_argument_group("example")
     # example_group.add_argument(
@@ -33,4 +53,15 @@ def set_argparse():
     #     help="Example str flag that can be set via ENV_VAR",
     # )
 
+def check_required_args(required_args: list[str], argparser: argparse.ArgumentParser):
+    """
+    Check if required arguments are set
+    Useful if using enviroment variables with argparse as default and required are mutually exclusive
+    """
+    for arg in required_args:
+        args = argparser.parse_args()
+        if getattr(args, arg) is None:
+            # raise ValueError(f"{arg} is required")
+            print(f"{arg} is required")
+            sys.exit(1)
 set_argparse()
