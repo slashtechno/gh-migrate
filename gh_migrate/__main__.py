@@ -23,6 +23,7 @@ async def get_repositories() -> list[dict]:
     # Request the user's information to get the number of repositories
     url = "https://api.github.com/user"
     headers = {
+        # Token should have repo and user:read scope
         "Authorization": f"token {args.token}",
         "Accept": "application/vnd.github.v3+json",
         "User-Agent": "GH Migrate",
@@ -37,6 +38,26 @@ async def get_repositories() -> list[dict]:
     # Get the number of pages to iterate through
     per_page = 100
     pages = math.ceil(total_repos / per_page)
+
+    repos = []
+
+    try:
+        async with httpx.AsyncClient() as client:
+            # Start at page 1 and iterate through the pages
+            # This usage of range is (start, stop) when generally it can be used as (stop)
+            for page in range(1, pages + 1):
+                url = f"https://api.github.com/user/repos?per_page={per_page}&page={page}"
+                response = await client.get(url, headers=headers)
+                response.raise_for_status()
+                instance_repos = response.json()
+                repos.extend(instance_repos)
+    except TypeError as e:
+        if str(e) == "'NoneType' object is not iterable":
+            print("No repos found")
+            return []
+        else:
+            raise e
+    json.dump(repos, open("output.json", "w"), indent=4)
     
 
 if __name__ == "__main__":
