@@ -23,15 +23,12 @@ def set_argparse():
         epilog=":)",
     )
 
-    argparser.add_argument(
-        "--migrate-all-repositories",
-        action="store_true",
-        help="Migrate all repositories from user to org",
-        default=os.environ["GH_MIGRATE_ALL_REPOSITORIES"]
-        if "GH_MIGRATE_ALL_REPOSITORIES" in os.environ
-        and os.environ["GH_MIGRATE_ALL_REPOSITORIES"] != ""
-        else False,
-    )
+    # argparser.add_argument(
+    #     "--migrate-all-repositories",
+    #     action="store_true",
+    #     help="Migrate all repositories from user to org",
+    #     default=False
+    # )
     argparser.add_argument(
         "--token",
         type=str,
@@ -40,8 +37,23 @@ def set_argparse():
         if "GH_MIGRATE_TOKEN" in os.environ and os.environ["GH_MIGRATE_TOKEN"] != ""
         else None,
     )
+    argparser.add_argument(
+        "--new-owner",
+        type=str,
+        help="New owner of the repositories",
+        default=os.environ["GH_MIGRATE_NEW_OWNER"] if "GH_MIGRATE_NEW_OWNER" in os.environ 
+        and os.environ["GH_MIGRATE_NEW_OWNER"] != "" else None,
+    )
+    argparser.add_argument(
+        "--team-id",
+        type=int,
+        help="Team IDs to add the repositories to",
+        action="append",
+        default=[int(os.environ["GH_MIGRATE_TEAM_ID"])] if "GH_MIGRATE_TEAM_ID" in os.environ
+        and os.environ["GH_MIGRATE_TEAM_ID"] != "" else [],
+    )
 
-    check_required_args(["token"], argparser)
+    check_required_args(["token", "new_owner"], argparser)
 
     # example_group = argparser.add_argument_group("example")
     # example_group.add_argument(

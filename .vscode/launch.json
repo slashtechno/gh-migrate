@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "gh_migrate",
             "args": [
-                "--migrate-all-repositories"
+                // "--migrate-all-repositories"
             ],
             "justMyCode": true
         },
